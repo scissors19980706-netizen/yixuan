@@ -1,0 +1,37 @@
+{
+  "name": "catpaw-external",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build -m ${NODE_ENV:-test}",
+    "build:test": "vite build -m test",
+    "build:prod": "vite build -m production",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "ant-design-vue": "^4.2.0",
+    "gsap": "^3.13.0",
+    "gsap-trial": "^3.12.7",
+    "highlight.js": "^11.11.1",
+    "marked": "^16.3.0",
+    "motion": "^12.23.16",
+    "motion-v": "^1.7.1",
+    "vue": "^3.5.18",
+    "vue-router": "^4.5.1"
+  },
+  "devDependencies": {
+    "@squoosh/lib": "^0.3.1",
+    "@vitejs/plugin-vue": "^4.6.2",
+    "@vue/tsconfig": "^0.7.0",
+    "sass": "^1.80.0",
+    "sass-embedded": "^1.93.0",
+    "typescript": "^5.9.2",
+    "vite": "^4.5.14"
+  }
+}
+

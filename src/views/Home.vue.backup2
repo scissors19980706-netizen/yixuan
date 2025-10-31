@@ -1,0 +1,1296 @@
+<script setup>
+import { ref, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
+import SectionBlock from '../components/SectionBlock.vue'
+import PixelArt from '../components/PixelArt.vue'
+import MaskImage from '../components/MaskImage.vue'
+
+/**
+ * 首页包含 6 个粘性分区
+ * 媒体位可放视频 <video> 或图片 <img>
+ */
+
+// 路由控制
+const router = useRouter()
+
+// 滚动控制
+const isScrollingPaused = ref(false)
+
+// 视频容器引用（已废弃，使用新的 section）
+const videoContainer = ref(null)
+// 新的视频 section 引用
+const videoSection = ref(null)
+
+
+// PixelArt组件参数
+const gridSize = ref(16)
+const shape = ref('square')
+const tileScale = ref(1.0)
+const tileColor = ref('#666666')
+const backgroundColor = ref('#000000')
+const brightness = ref(0)
+const contrast = ref(1.0)
+const blur = ref(0)
+const sharpness = ref(0)
+const invert = ref(false)
+const ditherType = ref('atkinson')
+const grayLevels = ref(16)
+const ditherStrength = ref(100)
+
+// 光标动画控制参数
+const animationSpeed = ref(1.0)
+const avoidanceRadius = ref(100)
+const maxDisplacement = ref(20)
+const enableAnimation = ref(true)
+
+/**
+ * 暂停滚动动画
+ */
+const pauseScroll = () => {
+  isScrollingPaused.value = true
+}
+
+/**
+ * 恢复滚动动画
+ */
+const resumeScroll = () => {
+  isScrollingPaused.value = false
+}
+
+/**
+ * 处理导航按钮点击
+ */
+const handleNavClick = (type) => {
+    if (type === 'guides') {
+      router.push('/guides')
+  } else if (type === 'changelog') {
+    // 更新日志跳转到独立页面（如果将来需要）
+    router.push('/changelog')
+  } else if (type === 'contact') {
+    // 联系我们跳转到独立页面（如果将来需要）
+    router.push('/contact')
+  }
+}
+
+
+onMounted(() => {
+  // 简化版本 - 直接显示，不需要复杂的滚动逻辑
+  console.log('Home 组件已挂载，视频容器应该可见')
+})
+
+onUnmounted(() => {
+  // 组件卸载时清理
+})
+</script>
+
+<template>
+  <div class="home-container">
+    <!-- 固定导航栏 -->
+    <div class="navigation-container">
+      <div class="nav-icon">
+        <img src="/src/assets/logo_black.svg" alt="CatPaw Logo" />
+      </div>
+      <div class="nav-buttons">
+            <button class="nav-btn" @click="handleNavClick('guides')">使用指南</button>
+        <button class="nav-btn" @click="handleNavClick('changelog')">更新日志</button>
+        <button class="nav-btn" @click="handleNavClick('contact')">联系我们</button>
+      </div>
+    </div>
+  
+    <main>
+      <!-- 第一个 section - #000000 -->
+    
+      <SectionBlock id="section-product" theme="dark" align="left" class="hero-section image">
+        <template #title>
+          <h2>
+            <div>From idea to <span class="x-container">
+              <span class="x-text">X</span>
+            </span></div>
+            <div>in seconds.</div>
+          </h2>
+          <div class="hero-right-text">
+            <div class="brand-line">
+              <span class="brand-name">CatPaw</span>
+              <span class="brand-subtitle">AI编程伙伴</span>
+            </div>
+            <div class="brand-description">让编码更专注 更高效</div>
+            <div class="button-group">
+              <button class="btn-primary">
+                <span>下载 CatPaw</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
+          
+          </div>
+        </template>
+        <template #media>
+          <PixelArt
+            :image-src="'/src/assets/catpaw_background.png'"
+            v-model:grid-size="gridSize"
+            v-model:shape="shape"
+            v-model:tile-scale="tileScale"
+            v-model:tile-color="tileColor"
+            v-model:background-color="backgroundColor"
+            v-model:brightness="brightness"
+            v-model:contrast="contrast"
+            v-model:blur="blur"
+            v-model:sharpness="sharpness"
+            v-model:invert="invert"
+            v-model:dither-type="ditherType"
+            v-model:gray-levels="grayLevels"
+            v-model:dither-strength="ditherStrength"
+            v-model:animation-speed="animationSpeed"
+            v-model:avoidance-radius="avoidanceRadius"
+            v-model:max-displacement="maxDisplacement"
+            v-model:enable-animation="enableAnimation"
+          />
+        </template>
+        <p>CatPaw — AI 编程伙伴，让编码更专注、更高效。</p>
+      </SectionBlock>
+          
+          
+     <SectionBlock id="section-controls" theme="dark" align="center" class="controls-section">
+        <template #title>
+          <h2>画布控制面板</h2>
+        </template>
+        <template #media>
+          <div class="controls-panel">
+            <div class="control-group">
+              <label>网格大小: {{ gridSize }}</label>
+              <input
+                type="range"
+                v-model="gridSize"
+                min="4"
+                max="32"
+                step="2"
+                class="control-slider"
+              />
+            </div>
+          
+            <div class="control-group">
+              <label>形状:</label>
+              <select v-model="shape" class="control-select">
+                <option value="square">方形</option>
+                <option value="circle">圆形</option>
+                <option value="diamond">菱形</option>
+              </select>
+            </div>
+          
+            <div class="control-group">
+              <label>瓦片缩放: {{ tileScale.toFixed(1) }}</label>
+              <input
+                type="range"
+                v-model="tileScale"
+                min="0.5"
+                max="2.0"
+                step="0.1"
+                class="control-slider"
+              />
+            </div>
+          
+            <div class="control-group">
+              <label>瓦片颜色:</label>
+              <input
+                type="color"
+                v-model="tileColor"
+                class="control-color"
+              />
+            </div>
+          
+            <div class="control-group">
+              <label>背景颜色:</label>
+              <input
+                type="color"
+                v-model="backgroundColor"
+                class="control-color"
+              />
+            </div>
+          
+            <div class="control-group">
+              <label>亮度: {{ brightness }}</label>
+              <input
+                type="range"
+                v-model="brightness"
+                min="-100"
+                max="100"
+                step="1"
+                class="control-slider"
+              />
+            </div>
+          
+            <div class="control-group">
+              <label>对比度: {{ contrast.toFixed(1) }}</label>
+              <input
+                type="range"
+                v-model="contrast"
+                min="0"
+                max="3"
+                step="0.1"
+                class="control-slider"
+              />
+            </div>
+          
+            <div class="control-group">
+              <label>模糊: {{ blur }}</label>
+              <input 
+                type="range"
+                v-model="blur"
+                min="0"
+                max="10"
+                step="1"
+                class="control-slider"
+              />
+            </div>
+          
+            <div class="control-group">
+              <label>锐化: {{ sharpness }}</label>
+              <input
+                type="range"
+                v-model="sharpness"
+                min="0"
+                max="10"
+                step="1"
+                class="control-slider"
+              />
+            </div>
+          
+            <div class="control-group">
+              <label>
+                <input
+                  type="checkbox"
+                  v-model="invert"
+                  class="control-checkbox"
+                />
+                反色
+              </label>
+            </div>
+          
+            <div class="control-group">
+              <label>动画速度: {{ animationSpeed.toFixed(1) }}</label>
+              <input
+                type="range"
+                v-model="animationSpeed"
+                min="0.1"
+                max="3.0"
+                step="0.1"
+                class="control-slider"
+              />
+            </div>
+          
+            <div class="control-group">
+              <label>避开半径: {{ avoidanceRadius }}</label>
+              <input 
+                type="range"
+                v-model="avoidanceRadius"
+                min="20"
+                max="20"
+                step="5"
+                class="control-slider"
+              />
+            </div>
+
+            <div class="control-group">
+              <label>最大位移: {{ maxDisplacement }}</label>
+              <input
+                type="range"
+                v-model="maxDisplacement"
+                min="5"
+                max="5"
+                step="1"
+                class="control-slider"
+              />
+            </div>
+
+            <div class="control-group">
+              <label>
+                <input
+                  type="checkbox"
+                  v-model="enableAnimation"
+                  class="control-checkbox"
+                />
+                启用动画效果
+              </label>
+            </div>
+          </div>
+        </template>
+      </SectionBlock>
+
+      <!-- 第二个 section 包装器 - 提供滚动高度 -->
+      <div class="section-features-wrapper">
+        <!-- 第二个 section - #000000 -->
+        <SectionBlock id="section-features" theme="light" align="top">
+      
+        <!-- @ts-ignore -->
+        <template #title>
+          <h2>
+            <div>From idea to <span class="x-container">
+              <span class="x-text">X</span>
+            </span></div>
+            <div>in seconds.</div>
+          </h2>
+          <div class="hero-right-text">
+            <div class="brand-line">
+              <span class="brand-name">CatPaw</span>
+              <span class="brand-subtitle">AI编程伙伴</span>
+            </div>
+            <div class="brand-description">让编码更专注 更高效</div>
+            <div class="button-group">
+              <button class="btn-primary">
+                <span>下载 CatPaw</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
+
+          </div>
+        </template>
+        <!-- @ts-ignore -->
+        <template #media>
+          <!-- 鼠标遮罩图片效果 -->
+          <div class="mask-section">
+            <MaskImage
+              background-image="/src/assets/layer1.png"
+              foreground-image="/src/assets/layer2.png"
+              background-alt="Layer 1 背景图"
+              foreground-alt="CatPaw 背景图"
+              :mask-radius="80"
+            />
+          </div>
+          
+          <!-- 原来的视频容器已移动到下面的独立 section -->
+        </template>
+      </SectionBlock>
+      </div> <!-- 结束 section-features-wrapper -->
+       
+      <!-- 新增的视频 section，带有滚动和 sticky 效果 -->
+      <section class="video-section">
+        <div class="video-section-height">
+          <div class="video-sticky-wrapper">
+            <div class="video-container-new">
+              <div class="video-placeholder">
+                <div class="play-button">
+                  <svg width="60" height="60" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8 5V19L19 12L8 5Z" fill="currentColor"/>
+                  </svg>
+                </div>
+                <div class="video-text">视频演示</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</template>
+
+<style scoped>
+/* 全局重置，确保没有默认边距 */
+* {
+  box-sizing: border-box;
+}
+
+/* 添加home-container样式 */
+.home-container {
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* 遮罩区域样式 - 扩展到屏幕宽度 */
+.mask-section {
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  margin: 0;
+  padding: 0;
+  background: #ffffff;
+  z-index: 1;
+}
+
+
+/* 旧的 video-container 样式已删除，现在使用新的 video-section */
+
+.video-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.video-placeholder:hover {
+  background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+  transform: scale(1.02);
+}
+
+.play-button {
+  width: 80px;
+  height: 80px;
+  background: rgba(15, 247, 174, 0.9);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 24px rgba(15, 247, 174, 0.3);
+}
+
+.play-button:hover {
+  background: rgba(15, 247, 174, 1);
+  transform: scale(1.1);
+  box-shadow: 0 12px 32px rgba(15, 247, 174, 0.4);
+}
+
+.play-button svg {
+  color: #000000;
+  margin-left: 4px; /* 微调播放按钮位置 */
+}
+
+.video-text {
+  font-family: 'PingFang SC', '苹方简', sans-serif;
+  font-size: 24px;
+  font-weight: 600;
+  color: #333333;
+  text-align: center;
+}
+
+/* section2 中的遮罩区域配合 sticky section - 扩展到屏幕宽度 */
+
+/* section2 中 MaskImage 组件的样式 - 确保充分利用屏幕宽度 */
+#section-features .mask-image-container {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+
+main { 
+  display: block; 
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+.btn-primary { background:#000000; color:#ffffff; padding:10px 16px; border-radius:0px; }
+
+
+
+.hero-section.image .pixel-art-container {
+  width: 100vw !important;
+  height: calc(100vh - 100px) !important; 
+  padding: 0 !important;
+  margin: 0 !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  overflow: hidden !important;
+}
+ 
+
+.hero-section .inner {
+  position: relative;
+  z-index: 2;
+  display: block;
+  height: 100%;
+  width: 100%;
+  max-width: none !important;
+  padding: 40px 60px;
+  box-sizing: border-box;
+}
+.hero-section.image {
+  position: relative !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  width: 100vw !important;
+  height: calc(100vh - 44px) !important; 
+  min-height: calc(100vh - 44px) !important;
+  display: block !important;
+  place-items: unset !important;
+  box-sizing: border-box !important;
+  left: 0 !important;
+  top: 0 !important;
+}
+
+.hero-section.image .media {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 1;
+  display: block !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.hero-section.image .media canvas {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: fill !important;
+  display: block !important;
+  max-width: none !important;
+  max-height: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  transform: translateX(0) !important;
+  border: none !important;
+  outline: none !important;
+} */
+
+.hero-section.image .media .canvas-container {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: block !important;
+  justify-content: unset !important;
+  align-items: unset !important;
+  overflow: hidden !important;
+} */
+
+/* 强制canvas占满整个屏幕 */
+
+.hero-section.image .media .pixel-canvas {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  min-width: 100% !important;
+  min-height: 100% !important;
+  object-fit: fill !important;
+  display: block !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  outline: none !important;
+}
+
+/* 终极解决方案 - 直接覆盖所有可能的限制 */
+ .hero-section.image canvas {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 1 !important;
+  object-fit: fill !important;
+  display: block !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  outline: none !important;
+  max-width: none !important;
+  max-height: none !important;
+  min-width: 100% !important;
+  min-height: 100% !important;
+} 
+
+/* 控制面板样式 */
+.controls-section {
+  background: #ffffff !important;
+  min-height: 100vh !important;
+  padding: 60px 20px !important;
+} */
+
+.controls-panel {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.control-group label {
+  color: #0FF7AE;
+  font-weight: 500;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.control-slider {
+  width: 100%;
+  height: 6px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.control-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #0FF7AE;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.control-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: #0FF7AE;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+
+.control-select {
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  color: #000000;
+  font-size: 14px;
+  outline: none;
+}
+
+.control-select:focus {
+  border-color: #0FF7AE;
+}
+
+.control-color {
+  width: 50px;
+  height: 40px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  outline: none;
+}
+
+.control-checkbox {
+  width: 16px;
+  height: 16px;
+  accent-color: #0FF7AE;
+} */
+
+/* 让文字内容漂浮在图片之上 */
+.hero-section .heading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+  margin: 0;
+  color: #ffffff;
+  pointer-events: none;
+} 
+
+.hero-section .heading h2 {
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  font-size: 100px;
+  font-weight: 500;
+  letter-spacing: -0.07em;
+  z-index: 99;
+  margin: 0;
+  position: absolute;
+  top: calc(50% - 140px);
+  left: calc(50% - 800px);
+  transform: none;
+  text-align: left;
+}
+
+.hero-section .heading h2 div {
+  display: block;
+  line-height: 1.2;
+} 
+
+/* X字母的灰色方块容器 */
+ .x-container {
+  display: inline-flex;
+  width: 70px;
+  height: 80px;
+  background-color: #ffffff;
+  border-radius: 4px;
+  align-items: center;
+  justify-content: center;
+  margin: 0 8px;
+  vertical-align: middle;
+} 
+
+ .x-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 72px;
+  font-weight: 700;
+  color: #111925;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  transform: translateX(-2px);
+} 
+
+/* 右侧品牌文字样式 */
+.hero-right-text {
+  position: absolute;
+  top: calc(50% - 100px);
+  right: 80px;
+  z-index: 100;
+  text-align: right;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+} 
+
+.brand-line {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+  justify-content: flex-end;
+} 
+
+.brand-name {
+  font-family: 'PingFang SC', '苹方简', sans-serif;
+  font-weight: 600;
+  font-size: 32px;
+  letter-spacing: 0.02em;
+  color: #0FF7AE;
+  line-height: 1.2;
+} 
+
+ .brand-subtitle {
+  font-family: 'PingFang SC', '苹方简', sans-serif;
+  font-weight: 600;
+  font-size: 32px;
+  letter-spacing: 0.02em;
+  color: #ffffff;
+  line-height: 1.2;
+} */
+
+.brand-description {
+  font-family: 'PingFang SC', '苹方简', sans-serif;
+  font-weight: 600;
+  font-size: 32px;
+  letter-spacing: 0.02em;
+  color: #ffffff;
+  line-height: 1.2;
+  margin-bottom: 24px;
+} 
+
+.button-group {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+} 
+
+.btn-primary {
+  background: #0FF7AE;
+  color: #000000;
+  border: none;
+  border-radius: 4px;
+  padding: 12px 20px;
+  font-family: 'PingFang SC', '苹方简', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+} 
+
+.btn-primary:hover {
+  background: #0DE5A0;
+  transform: translateY(-1px);
+} 
+
+
+
+/* 导航容器样式 */
+.navigation-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 124px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 56px 16px 20px;
+  background: transparent;
+  z-index: 1000;
+  box-sizing: border-box;
+}
+
+.nav-icon {
+  flex-shrink: 0;
+}
+
+.nav-icon img {
+  width: 116px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 80px;
+  flex-wrap: nowrap;
+}
+
+.nav-btn {
+  background: transparent;
+  color: #000000;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-family: 'PingFang SC', '苹方简', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.nav-btn:hover {
+  color: #0FF7AE;
+  transform: translateY(-1px);
+}
+
+.hero-section .content {
+  position: absolute;
+  top: 50%;
+  left: 60px;
+  transform: translateY(calc(-50% + 80px));
+  z-index: 100;
+  margin: 0;
+  color: #ffffff;
+  font-size: 1.2rem;
+  pointer-events: none;
+} */
+
+
+
+
+/* section2 包装器 - 提供滚动高度 */
+.section-features-wrapper {
+  height: 200vh; /* 提供足够的滚动高度 */
+  position: relative;
+}
+
+/* 第二个 section 的特定样式 */
+/* 确保 section2 容器为 sticky 定位 */
+#section-features {
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  min-height: 100vh;
+  z-index: 10;
+  overflow: hidden;
+  padding: 0 !important;
+  margin-left: calc(-50vw + 50%) !important; /* 确保内容能扩展到全屏 */
+  background: #ffffff !important;
+}
+
+/* 移除该分区内部默认的外边距与内边距，避免四周露出背景 */
+#section-features .inner {
+  max-width: none;
+  height: 100%;
+  padding: 0 !important;
+}
+
+#section-features .media {
+  margin: 0 !important;
+}
+
+/* section2 文字 - 固定在屏幕上 */
+#section-features .hero-right-text {
+  position: fixed;
+  top: 50%;
+  right: 80px;
+  z-index: 100;
+  text-align: right;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  transform: translateY(-50%);
+}
+
+#section-features .brand-line {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+  justify-content: center;
+}
+
+#section-features .brand-name {
+  font-family: 'PingFang SC', '苹方简', sans-serif;
+  font-weight: 600;
+  font-size: 32px;
+  letter-spacing: 0.02em;
+  color: #0FF7AE;
+  line-height: 1.2;
+}
+
+#section-features .brand-subtitle {
+  font-family: 'PingFang SC', '苹方简', sans-serif;
+  font-weight: 600;
+  font-size: 32px;
+  letter-spacing: 0.02em;
+  color: #000000;
+  line-height: 1.2;
+}
+
+#section-features .brand-description {
+  font-family: 'PingFang SC', '苹方简', sans-serif;
+  font-weight: 600;
+  font-size: 32px;
+  letter-spacing: 0.02em;
+  color: #000000;
+  line-height: 1.2;
+  margin-bottom: 24px;
+}
+
+#section-features h2 {
+  color: #000000;
+  font-family: 'Inter', sans-serif;
+  font-size: 100px;
+  font-weight: 500;
+  letter-spacing: -0.07em;
+  z-index: 100;
+  margin: 0;
+  position: fixed;
+  top: calc(50% - 140px);
+  left: 60px;
+  transform: none;
+  text-align: left;
+  pointer-events: none;
+}
+
+#section-features h2 div {
+  display: block;
+  line-height: 1.2;
+}
+
+#section-features .x-container {
+  display: inline-flex;
+  width: 70px;
+  height: 80px;
+  background-color: #000000;
+  border-radius: 4px;
+  align-items: center;
+  justify-content: center;
+  margin: 0 8px;
+  vertical-align: middle;
+}
+
+#section-features .x-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 72px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  transform: translateX(-2px);
+}
+
+
+/* 响应式设计 */
+@media (max-width: 1200px) {
+  .three-column-section {
+    width: 100%;
+    height: auto;
+    min-height: 382px;
+  }
+  
+  .gradient-section {
+    width: 100%;
+    height: auto;
+    min-height: 382px;
+  }
+  
+  .feature-description {
+    min-width: 250px;
+  }
+  
+  .feature-description p {
+    max-width: 240px;
+    font-size: 16px;
+  }
+  
+}
+
+@media (max-width: 768px) {
+  .feature-title {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  
+
+  /* Sticky Section 响应式样式 */
+  .sticky-section h2 {
+    font-size: 48px;
+  }
+  
+  .sticky-description p {
+    font-size: 16px;
+  }
+  
+  .sticky-content {
+    grid-template-columns: 1fr;
+    gap: 30px;
+    padding: 0 20px;
+  }
+  
+  .sticky-card {
+    padding: 30px 20px;
+  }
+  
+  .card-icon {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 20px;
+  }
+  
+  .card-icon svg {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .sticky-card h3 {
+    font-size: 20px;
+  }
+  
+  .sticky-card p {
+    font-size: 14px;
+  }
+  
+  
+  
+  .video-play-button {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 20px;
+  }
+  
+  .video-play-button svg {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .video-title {
+    font-size: 24px;
+    margin-bottom: 8px;
+  }
+  
+  .video-subtitle {
+    font-size: 16px;
+  }
+  
+  /* 视频容器响应式样式 */
+  .video-container {
+    width: 90%;
+    height: 50vh;
+    min-height: 300px;
+    margin: 0 auto; /* 确保在移动设备上也居中 */
+  }
+  
+  .play-button {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .play-button svg {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .video-text {
+    font-size: 20px;
+  }
+
+  /* Features Grid 响应式样式 */
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 20px 15px;
+  }
+
+  .feature-card {
+    padding: 20px 15px;
+  }
+
+  .placeholder-box {
+    height: 150px;
+  }
+  
+  /* 导航容器响应式样式 */
+  .navigation-container {
+    flex-direction: column;
+    gap: 16px;
+    padding: 12px 16px;
+  }
+  
+  .nav-buttons {
+    justify-content: center;
+    width: 100%;
+    gap: 20px;
+  }
+  
+  .nav-btn {
+    flex: none;
+    min-width: 60px;
+    text-align: center;
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+  
+  .nav-icon img {
+    width: 87px;
+    height: 24px;
+  }
+  
+
+  .codebase-image {
+    flex: none;
+    width: 100%;
+    height: 200px;
+  }
+  
+
+  .codebase-title-cn {
+    font-size: 24px;
+  }
+  
+  .codebase-description {
+    font-size: 16px;
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  /* 小屏幕遮罩区域样式 */
+  .mask-section {
+    height: 40vh;
+    min-height: 250px;
+    margin-bottom: 20px;
+  }
+}
+
+/* 新的视频 section 样式 - 透明背景 */
+.video-section {
+  z-index: 2;
+  border-radius: 32px;
+  background-color: transparent;
+  position: relative;
+  padding: 7rem 0;
+}
+
+.video-section-height {
+  height: 100vh; /* 临时改为 100vh，直接可见 */
+}
+
+.video-sticky-wrapper {
+  height: 100vh;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.video-container-new {
+  width: 80%;
+  max-width: 800px;
+  height: 60vh;
+  min-height: 400px;
+  background: #ff0000; /* 临时改为红色，便于看到 */
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  opacity: 1; /* 直接可见 */
+  transform: translateY(0); /* 不偏移 */
+  transition: all 0.6s ease-out;
+}
+
+/* 当滚动到这个 section 时，video 容器会变为可见 */
+.video-section.in-view .video-container-new {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+  .video-section {
+    padding: 2rem 0;
+    border-radius: 24px;
+  }
+  
+  .video-section-height {
+    height: 400vh;
+  }
+  
+  .video-container-new {
+    width: 90%;
+    height: 50vh;
+    min-height: 300px;
+  }
+}
+</style>
